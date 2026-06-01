@@ -1,3 +1,3 @@
 all:
-	gcc go.c -lncurses
+	gcc go.c -lncurses -g
 	./a.out
