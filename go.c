@@ -2,22 +2,35 @@
 #include <errno.h>
 
 int main(int argv, char** argc) {
-  WINDOW* win = initscr();
-  //  errno = leaveok(win, false);
-  //  if (r == -1)
 
+  WINDOW* win = initscr();
+  errno = noecho();
+  if (errno)
+    fprintf(stderr, "error noecho%d\n", errno);
+  keypad(win, TRUE);
 
   char ch = 0;
+  int cursy, cursx = 0;
   while (ch != 27) {
     ch = wgetch(win);
-    waddch(win, ch);
+    getyx(win, cursy, cursx);
+    if (errno)
+      fprintf(stderr, "error getch%d\n", errno);
+    printf("%d ", ch);
+
+    if (ch == 7) {
+      printf("hello");
+      errno = mvwdelch(win, cursy-0, cursx-1);
+      if (errno)
+        fprintf(stderr, "error move%d\n", errno);
+    }
+    else {
+      waddch(win, ch);
+    }
     errno = wrefresh(win);
   }
-
-
-
-  //  if (errno)
-  //   fprintf(stderr, "error refreshing%d\n", errno);
+  if (errno)
+    fprintf(stderr, "error refreshing%d\n", errno);
   endwin();
   return 0;
 }
