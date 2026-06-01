@@ -20,18 +20,44 @@ int main(int argv, char** argc) {
 
   char ch = 0;
   int cursy, cursx = 0;
+  int maxy, maxx = 0;
+  getmaxyx(win, maxy, maxx);
 
-  //escape
+  wmove(win, (maxy / 2) - 5, (maxx / 2) - 10);
+  for (int i = 0; i < 20; i++) {
+    waddch(win, '-');
+    getyx(win, cursy, cursx);
+  }
+  for (int i = 0; i < 10; i++) {
+    mvwaddch(win, cursy+1, cursx-1, '|');
+    getyx(win, cursy, cursx);
+  }
+  for (int i = 0; i < 20; i++) {
+    mvwaddch(win, cursy, cursx-2, '-');
+    getyx(win, cursy, cursx);
+  }
+  for (int i = 0; i < 10; i++) {
+    mvwaddch(win, cursy-1, cursx-1, '|');
+    getyx(win, cursy, cursx);
+  }
+
+  //window while not escape pressed
   while (ch != 27) {
+
+
+
     ch = wgetch(win);
     getyx(win, cursy, cursx);
     if (errno) {
       fprintf(stderr, "error getch%d\n", errno);
       return errno;
     }
+    
+
+    wmove(win, maxy, maxx);
 
     //delete
-    if (ch == 7) {
+/*    if (ch == 7) {
       if (cursx == 0 && cursy == 0) {
         continue;
       }
@@ -49,11 +75,7 @@ int main(int argv, char** argc) {
         continue;
       }
     }
-
-    if (ch == KEY_ENTER) {
-      winsertln(win);
-    }
-
+*/
 
 
 
@@ -62,8 +84,9 @@ int main(int argv, char** argc) {
       return errno;
     }
     else {
-      waddch(win, ch);
+ //     waddch(win, ch);
     }
+
     errno = wrefresh(win);
   }
   if (errno)
