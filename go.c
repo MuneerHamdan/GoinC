@@ -1,7 +1,6 @@
 #include <ncurses.h>
 #include <errno.h>
 
-
 // max board size
 #define BY 9
 #define BX 9
@@ -13,24 +12,30 @@
 #define BY 19
 #define BX 19
 */
+
 typedef struct {
   char black;
 } Turn;
 
-
 typedef struct {
   char c;
 } Board;
-   
 
 
 int main(int argv, char** argc) {
-  
+
   // change turns
   Turn turn;
   turn.black = 0;
 
   // initialize board
+  Board _board[BY][BX];
+  for (int i = 0; i < BY; i++) {
+    for (int j = 0; j < BX; j++) {
+      _board[i][j].c = '+';
+    }
+  }
+
   Board board[BY][BX];
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
@@ -58,6 +63,9 @@ int main(int argv, char** argc) {
   int cursy, cursx = 0;
   int maxy, maxx = 0;
   getmaxyx(win, maxy, maxx);
+  int bposy = ((BY / 2) + 1);
+  int bposx = ((BX / 2) + 1);
+
 
   wmove(win, ((maxy / 2) - BY / 2), (maxx / 2) - (BX / 2));
   for (int i = 0; i < BY; i++) {
@@ -69,6 +77,7 @@ int main(int argv, char** argc) {
 
   // make lip around board
   wmove(win, ((maxy / 2) - (BY / 2) - 1), ((maxx / 2) - (BX / 2) - 1));
+  printf("y:%d, x:%d\n", bposy, bposx);
   for (int i = 0; i < BX+2 ; i++) {
     waddch(win, '-');
     getyx(win, cursy, cursx);
@@ -92,54 +101,72 @@ int main(int argv, char** argc) {
 
   //game loop
   while (ch != 'q') {
+//  wmove(win, maxy / 2, maxx / 2);
+
+    // get char
     ch = wgetch(win);
+    // get y x of cursor
     getyx(win, cursy, cursx);
     if (errno) {
       fprintf(stderr, "error getch%d\n", errno);
       return errno;
     }
+    mvwaddch(win, 1, 1, bposx);
 
 
-
-    if (ch == 'h') {
+    // move cursor
+    if (ch == 'h' && bposx > 1) {
       wmove(win, cursy, cursx-1);
+      bposx--;
     }
-    else if (ch == 'j') {
+    else if (ch == 'j' && bposy < 9) {
       wmove(win, cursy+1, cursx);
+      bposy++;
     }
-    else if (ch == 'k') {
+    else if (ch == 'k' && bposy > 1) {
       wmove(win, cursy-1, cursx);
+      bposy--;
     }
-    else if (ch == 'l') {
+    else if (ch == 'l' && bposx < 9) {
       wmove(win, cursy, cursx+1);
+      bposx++;
     }
-
-
-
-
-
-    else if (ch == 'f') {
-      if (turn.black == 0) {
-       mvwaddch(win, cursy, cursx, 'O');
-       wmove(win, cursy, cursx);
-        turn.black = 1;
-      }
-      else {
-       mvwaddch(win, cursy, cursx, '@');
-       wmove(win, cursy, cursx);
-        turn.black = 0;
-      }
-    }
-
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
       return errno;
     }
 
+    // place piece
+    if (ch == 'f') {
+      if (turn.black == 0 && board[bposy][bposy].c != '@') { // maybe change later, as it literally means "if black is not place black."
+        board[bposy][bposx].c = 'O';
+        wmove(win, cursy, cursx);
+        mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
+        wmove(win, cursy, cursx);
+        turn.black = 1;
+      }
+      else if (turn.black == 1 && board[bposy][bposy].c != '@') {
+        board[bposy][bposx].c = '@';
+        wmove(win, bposy, bposx);
+        mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
+        wmove(win, cursy, cursx);
+        turn.black = 0;
+      }
+    }
+
+//    printf(",%d %d ", bposy, bposx);
+ //   getyx(win, bposy, bposx);
+  //  printf(",%d %d ", bposy, bposx);
+//    mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
+    //printf(",%d %d ", bposy, bposx);
+
+
     errno = wrefresh(win);
+    if (errno)
+      fprintf(stderr, "error refreshing%d\n", errno);
   }
-  if (errno)
-    fprintf(stderr, "error refreshing%d\n", errno);
+
+  // outside game loop
   endwin();
   return 0;
 }
