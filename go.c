@@ -13,9 +13,11 @@
 #define BX 19
 */
 
+/*
 typedef struct {
   char black;
 } Turn;
+*/
 
 typedef struct {
   char c;
@@ -23,25 +25,6 @@ typedef struct {
 
 
 int main(int argv, char** argc) {
-
-  // change turns
-  Turn turn;
-  turn.black = 0;
-
-  // initialize board
-  Board _board[BY][BX];
-  for (int i = 0; i < BY; i++) {
-    for (int j = 0; j < BX; j++) {
-      _board[i][j].c = '+';
-    }
-  }
-
-  Board board[BY][BX];
-  for (int i = 0; i < BY; i++) {
-    for (int j = 0; j < BX; j++) {
-      board[i][j].c = '+';
-    }
-  }
 
   // check window
   WINDOW* win = initscr();
@@ -59,12 +42,35 @@ int main(int argv, char** argc) {
   if (errno)
     fprintf(stderr, "error keypad%d\n", errno);
 
+
+  // change turns
+  /*
+  Turn turn;
+  turn.black = 0;
+  */
+  char turn = 0;
+
+  // initialize board
+  Board _board[BY][BX];
+  for (int i = 0; i < BY; i++) {
+    for (int j = 0; j < BX; j++) {
+      _board[i][j].c = '+';
+    }
+  }
+
+  Board board[BY][BX];
+  for (int i = 0; i < BY; i++) {
+    for (int j = 0; j < BX; j++) {
+      board[i][j].c = '+';
+    }
+  }
+
   char ch = 0;
   int cursy, cursx = 0;
   int maxy, maxx = 0;
   getmaxyx(win, maxy, maxx);
-  int bposy = ((BY / 2) + 1);
-  int bposx = ((BX / 2) + 1);
+  int bposy = ((BY / 2));
+  int bposx = ((BX / 2));
 
 
   wmove(win, ((maxy / 2) - BY / 2), (maxx / 2) - (BX / 2));
@@ -77,7 +83,6 @@ int main(int argv, char** argc) {
 
   // make lip around board
   wmove(win, ((maxy / 2) - (BY / 2) - 1), ((maxx / 2) - (BX / 2) - 1));
-  printf("y:%d, x:%d\n", bposy, bposx);
   for (int i = 0; i < BX+2 ; i++) {
     waddch(win, '-');
     getyx(win, cursy, cursx);
@@ -115,53 +120,52 @@ int main(int argv, char** argc) {
 
     mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
+    mvwprintw(win, 2, 0, "turn: %c", turn ? 'w' : 'b');
+    for (int i = 0; i < 9; i++) {
+      for (int j = 0; j < 9; j++) {
+        mvwprintw(win, maxy / 2 + i, j, "%c", _board[i][j].c);
+      }
+    }
     wmove(win, cursy, cursx);
 
     // move cursor
-    if (ch == 'h' && bposx > 1) {
+    if (ch == 'h' && bposx > 0) {
         bposx--;
         wmove(win, cursy, cursx-1);
     }
-    else if (ch == 'j' && bposy < 9) {
+    else if (ch == 'j' && bposy < 8) {
       wmove(win, cursy+1, cursx);
       bposy++;
     }
-    else if (ch == 'k' && bposy > 1) {
+    else if (ch == 'k' && bposy > 0) {
       wmove(win, cursy-1, cursx);
       bposy--;
     }
-    else if (ch == 'l' && bposx < 9) {
+    else if (ch == 'l' && bposx < 8) {
       wmove(win, cursy, cursx+1);
       bposx++;
     }
-    else if (errno) {
-      fprintf(stderr, "error move%d\n", errno);
-      return errno;
-    }
-
     // place piece
-    if (ch == 'f') {
-      if (turn.black == 0 && board[bposy][bposy].c != '@') { // maybe change later, as it literally means "if black is not place black."
+    else if (ch == 'f') {
+      if (turn == 0 && board[bposy][bposx].c != '@') { // maybe change later, as it literally means "if black is not place black."
         board[bposy][bposx].c = 'O';
         wmove(win, cursy, cursx);
         mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
         wmove(win, cursy, cursx);
-        turn.black = 1;
+        turn = 1;
       }
-      else if (turn.black == 1 && board[bposy][bposy].c != '@') {
+      else if (turn == 1 && board[bposy][bposx].c != 'O') {
         board[bposy][bposx].c = '@';
         wmove(win, bposy, bposx);
         mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
         wmove(win, cursy, cursx);
-        turn.black = 0;
+        turn = 0;
       }
     }
-
-//    printf(",%d %d ", bposy, bposx);
- //   getyx(win, bposy, bposx);
-  //  printf(",%d %d ", bposy, bposx);
-    //printf(",%d %d ", bposy, bposx);
-
+    if (errno) {
+      fprintf(stderr, "error move%d\n", errno);
+      return errno;
+    }
 
     errno = wrefresh(win);
     if (errno)
