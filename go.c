@@ -111,13 +111,16 @@ int main(int argv, char** argc) {
       fprintf(stderr, "error getch%d\n", errno);
       return errno;
     }
-    mvwaddch(win, 1, 1, bposx);
+//    mvwaddch(win, 1, 1, bposx);
 
+    mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
+    mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
+    wmove(win, cursy, cursx);
 
     // move cursor
     if (ch == 'h' && bposx > 1) {
-      wmove(win, cursy, cursx-1);
-      bposx--;
+        bposx--;
+        wmove(win, cursy, cursx-1);
     }
     else if (ch == 'j' && bposy < 9) {
       wmove(win, cursy+1, cursx);
@@ -131,7 +134,7 @@ int main(int argv, char** argc) {
       wmove(win, cursy, cursx+1);
       bposx++;
     }
-    if (errno) {
+    else if (errno) {
       fprintf(stderr, "error move%d\n", errno);
       return errno;
     }
@@ -157,7 +160,6 @@ int main(int argv, char** argc) {
 //    printf(",%d %d ", bposy, bposx);
  //   getyx(win, bposy, bposx);
   //  printf(",%d %d ", bposy, bposx);
-//    mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
     //printf(",%d %d ", bposy, bposx);
 
 
