@@ -1,3 +1,3 @@
 all:
-	gcc go.c -lncurses -g
+	gcc main.c board.c decisions.c -lncurses -g
 	./a.out

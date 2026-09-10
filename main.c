@@ -1,7 +1,9 @@
 #include <ncurses.h>
 #include <errno.h>
+#include "main.h"
+#include "board.h"
 
-// max board size
+// max tile size
 #define BY 9
 #define BX 9
 /*
@@ -19,10 +21,8 @@ typedef struct {
 } Turn;
 */
 
-typedef struct {
-  char c;
-} Board;
-
+void addtolinkedlist() {
+}
 
 int main(int argv, char** argc) {
 
@@ -50,18 +50,18 @@ int main(int argv, char** argc) {
   */
   char turn = 0;
 
-  // initialize board
-  Board _board[BY][BX];
+  // initialize tile
+  Tile _tile[BY][BX];
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      _board[i][j].c = '+';
+      _tile[i][j].c = '+';
     }
   }
 
-  Board board[BY][BX];
+  Tile tile[BY][BX];
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      board[i][j].c = '+';
+      tile[i][j].c = '+';
     }
   }
 
@@ -77,11 +77,11 @@ int main(int argv, char** argc) {
   for (int i = 0; i < BY; i++) {
     wmove(win, ((maxy / 2) - (BY / 2) + i), ((maxx / 2) - (BX / 2)));
     for (int j = 0; j < BX; j++) {
-      waddch(win, board[i][j].c);
+      waddch(win, tile[i][j].c);
     }
   }
 
-  // make lip around board
+  // make lip around tile
   wmove(win, ((maxy / 2) - (BY / 2) - 1), ((maxx / 2) - (BX / 2) - 1));
   for (int i = 0; i < BX+2 ; i++) {
     waddch(win, '-');
@@ -123,7 +123,7 @@ int main(int argv, char** argc) {
     mvwprintw(win, 2, 0, "turn: %c", turn ? 'w' : 'b');
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
-        mvwprintw(win, maxy / 2 + i, j, "%c", _board[i][j].c);
+        mvwprintw(win, maxy / 2 + i, j, "%c", _tile[i][j].c);
       }
     }
     wmove(win, cursy, cursx);
@@ -147,17 +147,20 @@ int main(int argv, char** argc) {
     }
     // place piece
     else if (ch == 'f') {
-      if (turn == 0 && board[bposy][bposx].c != '@') { // maybe change later, as it literally means "if black is not place black."
-        board[bposy][bposx].c = 'O';
+      if (turn == 0 && tile[bposy][bposx].c != '@') {
+
+        Stone stone = {'O', {bposy, bposx}, 0};
+        tile[bposy][bposx].stone = stone;
+////        tile[bposy][bposx].c = 'O';
         wmove(win, cursy, cursx);
-        mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
+        mvwaddch(win, cursy, cursx, tile[bposy][bposx].c);
         wmove(win, cursy, cursx);
         turn = 1;
       }
-      else if (turn == 1 && board[bposy][bposx].c != 'O') {
-        board[bposy][bposx].c = '@';
+      else if (turn == 1 && tile[bposy][bposx].c != 'O') {
+        tile[bposy][bposx].c = '@';
         wmove(win, bposy, bposx);
-        mvwaddch(win, cursy, cursx, board[bposy][bposx].c);
+        mvwaddch(win, cursy, cursx, tile[bposy][bposx].c);
         wmove(win, cursy, cursx);
         turn = 0;
       }
