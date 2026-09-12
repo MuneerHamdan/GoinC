@@ -2,29 +2,10 @@
 #include <errno.h>
 #include "main.h"
 #include "board.h"
+#include "decisions.h"
 
-// max tile size
-#define BY 9
-#define BX 9
-/*
-#define BY 13
-#define BX 13
-*/
-/*
-#define BY 19
-#define BX 19
-*/
 
-/*
-typedef struct {
-  char black;
-} Turn;
-*/
-
-void addtolinkedlist() {
-}
-
-int main(int argv, char** argc) {
+int main(void) {
 
   // check window
   WINDOW* win = initscr();
@@ -50,18 +31,20 @@ int main(int argv, char** argc) {
   */
   char turn = 0;
 
-  // initialize tile
-  Tile _tile[BY][BX];
+  // initialize board
+  Board _board[BY][BX];
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      _tile[i][j].c = '+';
+      _board[i][j].c = '+';
+      _board[i][j].stone = NULL;
     }
   }
 
-  Tile tile[BY][BX];
+  Board board[BY][BX];
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      tile[i][j].c = '+';
+      board[i][j].c = '+';
+      board[i][j].stone = NULL;
     }
   }
 
@@ -73,15 +56,16 @@ int main(int argv, char** argc) {
   int bposx = ((BX / 2));
 
 
+  //make board
   wmove(win, ((maxy / 2) - BY / 2), (maxx / 2) - (BX / 2));
   for (int i = 0; i < BY; i++) {
     wmove(win, ((maxy / 2) - (BY / 2) + i), ((maxx / 2) - (BX / 2)));
     for (int j = 0; j < BX; j++) {
-      waddch(win, tile[i][j].c);
+      waddch(win, board[i][j].c);
     }
   }
 
-  // make lip around tile
+  // make lip around board
   wmove(win, ((maxy / 2) - (BY / 2) - 1), ((maxx / 2) - (BX / 2) - 1));
   for (int i = 0; i < BX+2 ; i++) {
     waddch(win, '-');
@@ -106,24 +90,21 @@ int main(int argv, char** argc) {
 
   //game loop
   while (ch != 'q') {
-//  wmove(win, maxy / 2, maxx / 2);
 
-    // get char
     ch = wgetch(win);
-    // get y x of cursor
     getyx(win, cursy, cursx);
     if (errno) {
       fprintf(stderr, "error getch%d\n", errno);
       return errno;
     }
-//    mvwaddch(win, 1, 1, bposx);
 
+    // debug
     mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? 'w' : 'b');
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
-        mvwprintw(win, maxy / 2 + i, j, "%c", _tile[i][j].c);
+        mvwprintw(win, maxy / 2 + i, j, "%c", _board[i][j].c);
       }
     }
     wmove(win, cursy, cursx);
@@ -147,23 +128,24 @@ int main(int argv, char** argc) {
     }
     // place piece
     else if (ch == 'f') {
-      if (turn == 0 && tile[bposy][bposx].c != '@') {
+      if ((turn % 2 == 0) && board[bposy][bposx].stone == NULL) {
 
-        Stone stone = {'O', {bposy, bposx}, 0};
-        tile[bposy][bposx].stone = stone;
-////        tile[bposy][bposx].c = 'O';
-        wmove(win, cursy, cursx);
-        mvwaddch(win, cursy, cursx, tile[bposy][bposx].c);
-        wmove(win, cursy, cursx);
-        turn = 1;
+        Stone* stone = makeStone('O', (Vec2i){cursy, cursx});
+        placeStone(&board[bposy][bposx], stone, win);
+        turn++;
+
+        // check if in atari
+        if (getLiberties(board, stone, win) == 4) {
+        }
       }
-      else if (turn == 1 && tile[bposy][bposx].c != 'O') {
-        tile[bposy][bposx].c = '@';
-        wmove(win, bposy, bposx);
-        mvwaddch(win, cursy, cursx, tile[bposy][bposx].c);
-        wmove(win, cursy, cursx);
-        turn = 0;
+      else if ((turn % 2 == 1) && board[bposy][bposx].stone == NULL) {
+        Stone* stone = makeStone('@', (Vec2i){cursy, cursx});
+        placeStone(&board[bposy][bposx], stone, win);
+        turn++;
       }
+    }
+    else if (ch == 'r') {
+      removeStones(win, board);
     }
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
@@ -176,6 +158,9 @@ int main(int argv, char** argc) {
   }
 
   // outside game loop
+
+  //remove all stones
+
   endwin();
   return 0;
 }

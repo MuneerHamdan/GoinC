@@ -3,8 +3,9 @@
 
 typedef struct {
   int y, x;
-} vec2i;
+} Vec2i;
 
+int main(void);
 void addtolinkedlist();
 
 #endif
