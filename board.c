@@ -11,8 +11,18 @@ Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, WINDOW* win, Board (*board)[BX]
   stone->cpos.x = cpos.x;
   stone->bpos.y = bpos.y;
   stone->bpos.x = bpos.x;
-  stone->liberties = 0; 
+  stone->liberties = 4; 
   return stone;
+}
+void findDead(WINDOW* win, Board (*board)[BX]) {
+  // THERE'S PROBABLY AN ALGORITHM TO BE FOUND
+  for (int i = 0; i < BY; i++) {
+    for (int j = 0; j < BX; j++) {
+      if (board[i][j].stone != NULL && board[i][j].stone->liberties == 0) {
+        removeStone(win, board, i, j);
+      }
+    }
+  }
 }
 void removeStone(WINDOW* win, Board (*board)[BX], int bposy, int bposx){
   free(board[bposy][bposx].stone);

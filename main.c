@@ -5,7 +5,7 @@
 #include "board.h"
 #include "decisions.h"
 
-// make it so that CTRL + C does not cause unfinished (no freeing of memory) end of program
+// make it so that CTRL+C does not cause unfinished (no freeing of memory) end of program
 void handle_sigint(int sig) {}
 
 int main(void) {
@@ -88,14 +88,9 @@ int main(void) {
     // place piece
     else if (ch == 'f') {
       if ((turn % 2 == 0) && board[bposy][bposx].stone == NULL) {
-
         Stone* stone = makeStone('O', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
         placeStone(&board[bposy][bposx], stone, win);
         turn++;
-
-        // check if in atari
-//        if (getLiberties(board, stone, win) == 4) {
- //       }
       }
       else if ((turn % 2 == 1) && board[bposy][bposx].stone == NULL) {
         Stone* stone = makeStone('@', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
@@ -112,6 +107,9 @@ int main(void) {
     }
 
     //update stuff
+    updateLiberties(win, board);
+    findDead(win, board);
+
     //render
     clear();
     // print debug
@@ -122,6 +120,10 @@ int main(void) {
     mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(win, board, board[bposy][bposx].stone) : 0);
     mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.x : -1);
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.x : -1);
+
+    // quit info
+    mvwprintw(win, maxy-1, 0, "press 'q' to quit");
+
     // draw _board
     for (int i = 0; i < BY; i++) {
       for (int j = 0; j < BX; j++) {

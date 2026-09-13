@@ -10,6 +10,7 @@
   so when player places a stone, check from cursor's position's cardinal directions if there are any enemy stones. if there are add that many stones to the player's stone's liberties
 */
 int getLiberties(WINDOW* win, Board (*board)[BX], Stone* stone);
+void updateLiberties(WINDOW* win, Board (*board)[BX]);
 int atari();
 
 #endif
