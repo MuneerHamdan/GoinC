@@ -103,18 +103,14 @@ int main(void) {
         turn--;
       }
     }
-<<<<<<< HEAD
     else if (ch == 'r') {
       removeStone(win, board, bposy, bposx);
     }
-=======
->>>>>>> main
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
       return errno;
     }
 
-<<<<<<< HEAD
     //update stuff
     //render
     clear();
@@ -157,9 +153,7 @@ int main(void) {
       getyx(win, cursy, cursx);
     }
     */
-=======
     // draw board
->>>>>>> main
 
     errno = wrefresh(win);
     if (errno) {
