@@ -18,7 +18,8 @@
 
 typedef struct {
   char c;
-  Vec2i pos;
+  Vec2i cpos;
+  Vec2i bpos;
   int liberties;
 } Stone;
 
@@ -27,7 +28,7 @@ typedef struct {
   Stone* stone;
 } Board;
 
-Stone* makeStone(char c, Vec2i pos);
+Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, WINDOW* win, Board (*board)[BX]);
 void removeStone(WINDOW* win, Board (*board)[BX], int bposy, int bposx);
 void removeStones(WINDOW* win, Board (*board)[BX]);
 void placeStone(Board* board, Stone* stone, WINDOW* win);

@@ -89,16 +89,16 @@ int main(void) {
     else if (ch == 'f') {
       if ((turn % 2 == 0) && board[bposy][bposx].stone == NULL) {
 
-        Stone* stone = makeStone('O', (Vec2i){cursy, cursx});
+        Stone* stone = makeStone('O', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
         placeStone(&board[bposy][bposx], stone, win);
         turn++;
 
         // check if in atari
-        if (getLiberties(board, stone, win) == 4) {
-        }
+//        if (getLiberties(board, stone, win) == 4) {
+ //       }
       }
       else if ((turn % 2 == 1) && board[bposy][bposx].stone == NULL) {
-        Stone* stone = makeStone('@', (Vec2i){cursy, cursx});
+        Stone* stone = makeStone('@', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
         placeStone(&board[bposy][bposx], stone, win);
         turn--;
       }
@@ -114,18 +114,22 @@ int main(void) {
     //update stuff
     //render
     clear();
-    // debug
+    // print debug
     mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? 'w' : 'b');
     mvwprintw(win, 3, 0, "stone?: %c", (board[bposy][bposx].stone != NULL) ? 'y' : 'n');
-    //make board
+    mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(win, board, board[bposy][bposx].stone) : 0);
+    mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.x : -1);
+    mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.x : -1);
+    // draw _board
     for (int i = 0; i < BY; i++) {
       for (int j = 0; j < BX; j++) {
 //        mvwprintw(win, ((maxy / 2) - (BY - 2) - 1 + (2 * i)), ((maxx / 2) - (BX - 2) - 1 + (2 * j)), "%c", '-');
         mvwprintw(win, ((maxy / 2) - (BY / 2)) + i, ((maxx / 2) - (BX / 2)) + j, "%c", _board[i][j].c);
       }
     }
+    // draw board
     for (int i = 0; i < BY; i++) {
       for (int j = 0; j < BX; j++) {
         mvwprintw(win, ((maxy / 2) - (BY / 2)) + i, ((maxx / 2) - (BX / 2)) + j, "%c", board[i][j].c);
@@ -153,7 +157,6 @@ int main(void) {
       getyx(win, cursy, cursx);
     }
     */
-    // draw board
 
     errno = wrefresh(win);
     if (errno) {

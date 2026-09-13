@@ -2,12 +2,15 @@
 #include <ncurses.h>
 #include "main.h"
 #include "board.h"
+#include "decisions.h"
 
-Stone* makeStone(char c, Vec2i pos) {
+Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, WINDOW* win, Board (*board)[BX]){
   Stone* stone = (Stone*)malloc(sizeof(Stone));
   stone->c = c;
-  stone->pos.y = pos.y;
-  stone->pos.x = pos.x;
+  stone->cpos.y = cpos.y;
+  stone->cpos.x = cpos.x;
+  stone->bpos.y = bpos.y;
+  stone->bpos.x = bpos.x;
   stone->liberties = 0; 
   return stone;
 }
