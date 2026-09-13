@@ -1,11 +1,16 @@
+#include <signal.h>
 #include <ncurses.h>
 #include <errno.h>
 #include "main.h"
 #include "board.h"
 #include "decisions.h"
 
+// make it so that CTRL + C does not cause unfinished (no freeing of memory) end of program
+void handle_sigint(int sig) {}
 
 int main(void) {
+
+  signal(SIGINT, handle_sigint);
 
   // check window
   WINDOW* win = initscr();
@@ -98,14 +103,18 @@ int main(void) {
         turn--;
       }
     }
+<<<<<<< HEAD
     else if (ch == 'r') {
       removeStone(win, board, bposy, bposx);
     }
+=======
+>>>>>>> main
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
       return errno;
     }
 
+<<<<<<< HEAD
     //update stuff
     //render
     clear();
@@ -148,6 +157,9 @@ int main(void) {
       getyx(win, cursy, cursx);
     }
     */
+=======
+    // draw board
+>>>>>>> main
 
     errno = wrefresh(win);
     if (errno) {
