@@ -115,11 +115,13 @@ int main(void) {
     // print debug
     mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
-    mvwprintw(win, 2, 0, "turn: %c", turn ? 'w' : 'b');
+    mvwprintw(win, 2, 0, "turn: %c", turn ? '@' : 'O');
     mvwprintw(win, 3, 0, "stone?: %c", (board[bposy][bposx].stone != NULL) ? 'y' : 'n');
     mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(win, board, board[bposy][bposx].stone) : 0);
     mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.x : -1);
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.x : -1);
+    mvwprintw(win, 7, 0, "&stone: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone : NULL);
+    mvwprintw(win, 8, 0, "stone->group: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->group : NULL);
 
     // quit info
     mvwprintw(win, maxy-1, 0, "press 'q' to quit");

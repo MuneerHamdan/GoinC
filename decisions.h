@@ -11,6 +11,6 @@
 */
 int getLiberties(WINDOW* win, Board (*board)[BX], Stone* stone);
 void updateLiberties(WINDOW* win, Board (*board)[BX]);
-int atari();
+//int atari();
 
 #endif

@@ -16,11 +16,13 @@
 #define BX 19
 */
 
-typedef struct {
+typedef struct Stone {
   char c;
   Vec2i cpos;
   Vec2i bpos;
   int liberties;
+
+  struct Stone* group;
 } Stone;
 
 typedef struct {
@@ -29,6 +31,7 @@ typedef struct {
 } Board;
 
 Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, WINDOW* win, Board (*board)[BX]);
+void addtogroup(Board (*board)[BX], Stone* stone);
 void findDead(WINDOW* win, Board (*board)[BX]);
 void removeStone(WINDOW* win, Board (*board)[BX], int bposy, int bposx);
 void removeStones(WINDOW* win, Board (*board)[BX]);
